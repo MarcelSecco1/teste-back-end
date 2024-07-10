@@ -7,4 +7,4 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // })->middleware('auth:sanctum');
 
-Route::get('/', [UserController::class, 'index']);
+Route::resource('/user', UserController::class);
