@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -8,3 +9,4 @@ use Illuminate\Support\Facades\Route;
 // })->middleware('auth:sanctum');
 
 Route::resource('/user', UserController::class);
+Route::resource('/transaction', TransactionController::class);
