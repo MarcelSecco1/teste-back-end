@@ -42,7 +42,7 @@ class BalanceRepository
         return $this->getBalanceById($idBalance)->delete();
     }
 
-    public function getBalanceByUserId(int $userId): Balance
+    public function getBalanceByUserId(int $userId)
     {
         return $this->balance->where('user_id', $userId)->first();
     }

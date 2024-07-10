@@ -22,7 +22,7 @@ class BalanceStoreUpdate extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => 'sometimes|exists:users,id',
+            'user_id' => 'sometimes|exists:users,id|unique:balances,user_id',
             'amount' => 'sometimes|numeric',
         ];
     }

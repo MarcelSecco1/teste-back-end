@@ -50,4 +50,28 @@ class BalanceTest extends TestCase
             'updated' => 'ok',
         ]);
     }
+
+    public function test_destroy_balance(): void
+    {
+        $user = User::factory()->create();
+        $balance = Balance::factory()->create([
+            'user_id' => $user->id,
+        ]);
+
+        $response = $this->deleteJson('/balance/' . $balance->id);
+
+        $response->assertStatus(204);
+    }
+
+    public function test_invalid_user_id(): void
+    {
+        $response = $this->postJson('/balance', [
+            'user_id' => 0,
+            'amount' => 100,
+        ]);
+
+        $response->assertJsonValidationErrors('user_id');
+        $response->assertStatus(422);
+    }
+
 }

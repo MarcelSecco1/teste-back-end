@@ -39,9 +39,10 @@ class TransactionService
                 return ['message' => 'Shopkeepers cannot make transactions'];
             }
 
-            $balance = $this->balanceRepository->getBalanceByUserId($data['payer_id']);
+            $balancePayer = $this->balanceRepository->getBalanceByUserId($data['payer_id']);
+            $balancePayee = $this->balanceRepository->getBalanceByUserId($data['payee_id']);
 
-            if ($balance->amount < $data['value']) {
+            if ($balancePayer->amount < $data['value']) {
                 DB::rollBack();
                 return ['message' => 'Insufficient balance'];
             }
@@ -58,6 +59,12 @@ class TransactionService
                 DB::rollBack();
                 return ['message' => 'Transaction not authorized'];
             }
+
+            $balancePayer->amount -= $data['value'];
+            $this->balanceRepository->updateBalance(['amount' => $balancePayer->amount], $balancePayer->id);
+
+            $balancePayee->amount += $data['value'];
+            $this->balanceRepository->updateBalance(['amount' => $balancePayee->amount], $balancePayee->id);
 
             $transaction = $this->transactionRepository->createTransaction($data);
             DB::commit();

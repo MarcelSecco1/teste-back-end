@@ -3,10 +3,9 @@
 namespace Tests\Feature;
 
 use App\Models\Balance;
-use App\Models\Transaction;
 use App\Models\User;
+use App\Observers\UserObserver;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class TransactionTest extends TestCase
@@ -15,13 +14,21 @@ class TransactionTest extends TestCase
 
     public function test_create_transaction(): void
     {
-
+        User::unsetEventDispatcher();
         $payer = User::factory()->create();
-        $balance = Balance::factory()->create([
+        $payee = User::factory()->create();
+
+        User::observe(UserObserver::class);
+
+        Balance::factory()->create([
             'user_id' => $payer->id,
             'amount' => 100.00,
         ]);
-        $payee = User::factory()->create();
+
+        Balance::factory()->create([
+            'user_id' => $payee->id,
+            'amount' => 0.00,
+        ]);
 
         $response = $this->postJson('/transaction', [
             'payer_id' => $payer->id,
@@ -66,15 +73,11 @@ class TransactionTest extends TestCase
         $response->assertStatus(400);
     }
 
-    public function teste_fail_transaction_insuficient_balance(): void
+    public function test_fail_transaction_insuficient_balance(): void
     {
         $payer = User::factory()->create();
         $payee = User::factory()->create();
 
-        Balance::factory()->create([
-            'user_id' => $payer->id,
-            'amount' => 100.00,
-        ]);
 
         $response = $this->postJson('/transaction', [
             'payer_id' => $payer->id,
@@ -86,5 +89,42 @@ class TransactionTest extends TestCase
             'message' => 'Insufficient balance',
         ]);
         $response->assertStatus(400);
+    }
+
+    public function test_transaction_transfer_balance(): void
+    {
+        User::unsetEventDispatcher();
+
+        $payer = User::factory()->create();
+        $payee = User::factory()->create();
+
+        User::observe(UserObserver::class);
+
+
+        $balancePayer = Balance::factory()->create([
+            'user_id' => $payer->id,
+            'amount' => 100.00,
+        ]);
+
+        $balancePayee = Balance::factory()->create([
+            'user_id' => $payee->id,
+            'amount' => 0.00,
+        ]);
+
+        $response = $this->postJson('/transaction', [
+            'payer_id' => $payer->id,
+            'payee_id' => $payee->id,
+            'value' => 50.00,
+        ]);
+
+        $response->assertStatus(201);
+        $this->assertDatabaseHas('balances', [
+            'id' => $balancePayer->id,
+            'amount' => 50.00,
+        ]);
+        $this->assertDatabaseHas('balances', [
+            'id' => $balancePayee->id,
+            'amount' => 50.00,
+        ]);
     }
 }
