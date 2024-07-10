@@ -31,9 +31,7 @@ class UserRepository
     public function updateUser(array $data, int $idUser)
     {
         $user = $this->getUserById($idUser);
-        $user->update($data);
-
-        return $user;
+        return $user->update($data);
     }
 
     public function deleteUser(int $idUser)
@@ -41,4 +39,5 @@ class UserRepository
         $user = $this->getUserById($idUser);
         $user->delete();
     }
+
 }

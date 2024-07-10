@@ -3,8 +3,6 @@
 namespace App\Repositories;
 
 use App\Models\Transaction;
-use App\Models\User;
-use GuzzleHttp\Client;
 
 class TransactionRepository
 {

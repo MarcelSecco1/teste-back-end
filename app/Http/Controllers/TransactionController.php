@@ -33,6 +33,10 @@ class TransactionController extends Controller
     {
         $transaction = $this->transactionService->createTransaction($request->all());
 
+        if (isset($transaction['message'])) {
+            return response()->json($transaction, 400);
+        }
+
         return response()->json($transaction, 201);
     }
 
@@ -42,9 +46,8 @@ class TransactionController extends Controller
     public function show(string $id)
     {
         $transaction = $this->transactionService->getTransactionById((int) $id);
-        $transaction = Transaction::with(['payer', 'payee'])->findOrFail($id);
+
         return new TransactionResource($transaction);
-        // return new TransactionResource($transaction);
     }
 
     /**
@@ -53,6 +56,10 @@ class TransactionController extends Controller
     public function update(Request $request, string $id)
     {
         $transaction = $this->transactionService->updateTransaction($request->all(), (int) $id);
+
+        if (isset($transaction['message'])) {
+            return response()->json($transaction, 400);
+        }
 
         return response()->json($transaction, 200);
     }

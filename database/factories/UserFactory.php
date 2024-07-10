@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Balance;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -46,7 +47,6 @@ class UserFactory extends Factory
 
     function generateFakeCPF(): string
     {
-        // Gerar um CPF formatado (XXX.XXX.XXX-XX)
         return sprintf(
             '%03d.%03d.%03d-%02d',
             mt_rand(0, 999),

@@ -56,4 +56,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Transaction::class, 'payee_id');
     }
+
+    public function balance()
+    {
+        return $this->hasOne(Balance::class);
+    }
 }
+

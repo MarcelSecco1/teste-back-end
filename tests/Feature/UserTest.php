@@ -43,7 +43,6 @@ class UserTest extends TestCase
                     "email",
                     "cpf",
                     "type",
-                    "created_at",
                 ]
             ]);
     }

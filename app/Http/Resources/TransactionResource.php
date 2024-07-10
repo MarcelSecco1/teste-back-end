@@ -17,6 +17,7 @@ class TransactionResource extends JsonResource
         return [
             // 'payer' => new UserResource($this->whenLoaded('payer')),
             // 'payee' => new UserResource($this->whenLoaded('payee')),
+            'id' => $this->id,
             'payer' => new UserResource($this->whenLoaded('payer')),
             'payee' => new UserResource($this->whenLoaded('payee')),
             'value' => $this->value,

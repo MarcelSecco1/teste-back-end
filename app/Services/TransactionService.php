@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Repositories\BalanceRepository;
 use App\Repositories\TransactionRepository;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\DB;
@@ -9,14 +10,16 @@ use GuzzleHttp\Client;
 
 class TransactionService
 {
-    protected $transactionRepository, $userRepository;
+    protected $transactionRepository, $userRepository, $balanceRepository;
 
     public function __construct(
         TransactionRepository $transactionRepository,
+        BalanceRepository $balanceRepository,
         UserRepository $userRepository
     ) {
         $this->transactionRepository = $transactionRepository;
         $this->userRepository = $userRepository;
+        $this->balanceRepository = $balanceRepository;
     }
 
     public function getAllTransactions()
@@ -29,18 +32,22 @@ class TransactionService
         DB::beginTransaction();
 
         try {
-            $transaction = $this->transactionRepository->createTransaction($data);
             $payer = $this->userRepository->getUserById($data['payer_id']);
 
             if ($payer->type == 'shopkeeper') {
-                $this->updateStatusTransaction($transaction->id, 'canceled');
-                DB::commit();
+                DB::rollBack();
                 return ['message' => 'Shopkeepers cannot make transactions'];
             }
 
+            $balance = $this->balanceRepository->getBalanceByUserId($data['payer_id']);
+
+            if ($balance->amount < $data['value']) {
+                DB::rollBack();
+                return ['message' => 'Insufficient balance'];
+            }
+
             if ($data['value'] <= 0) {
-                $this->updateStatusTransaction($transaction->id, 'canceled');
-                DB::commit();
+                DB::rollBack();
                 return ['message' => 'Invalid value'];
             }
 
@@ -48,8 +55,7 @@ class TransactionService
             $authorization = json_decode($this->autorizathionTransaction());
 
             if ($authorization->status != "success" || $authorization->data->authorization != true) {
-                $this->updateStatusTransaction($transaction->id, 'canceled');
-                DB::commit();
+                DB::rollBack();
                 return ['message' => 'Transaction not authorized'];
             }
 
@@ -60,8 +66,8 @@ class TransactionService
 
             return $transaction;
         } catch (\Exception $e) {
+
             DB::rollBack();
-            // return throw $e;
             return ['message' => 'Error creating transaction'];
         }
     }
@@ -74,9 +80,10 @@ class TransactionService
     public function updateTransaction(array $data, int $idTransaction): array
     {
         DB::beginTransaction();
+
         try {
             $transaction = $this->transactionRepository->getTransactionById($idTransaction);
-            $payer = $this->userRepository->getUserById($data['payer_id']);
+            $payer = $this->userRepository->getUserById($transaction['payer_id']);
 
             if ($payer->type == 'shopkeeper') {
                 $this->updateStatusTransaction($transaction->id, 'canceled');
@@ -88,22 +95,28 @@ class TransactionService
                 return ['message' => 'Transaction already completed'];
             }
 
-            if ($data['value'] <= 0) {
+            if ($payer->balance < $data['value']) {
+                $this->updateStatusTransaction($transaction->id, 'canceled');
+                DB::commit();
+                return ['message' => 'Insufficient balance'];
+            }
+
+            if (isset($data['value']) || $data['value'] <= 0) {
                 $this->updateStatusTransaction($transaction->id, 'canceled');
                 DB::commit();
                 return ['message' => 'Invalid value'];
             }
 
-            $transaction = $this->updateTransaction($data, $idTransaction);
+
+            $transaction = $this->transactionRepository->updateTransaction($data, $idTransaction);
+            $this->updateStatusTransaction($idTransaction, 'completed');
             DB::commit();
 
-            return $transaction;
+            return ['updated' => $transaction];
         } catch (\Exception $e) {
             DB::rollBack();
             return ['message' => 'Error updating transaction'];
         }
-
-        return $this->transactionRepository->updateTransaction($data, $idTransaction);
     }
 
     public function deleteTransaction(int $idTransaction)
@@ -133,11 +146,11 @@ class TransactionService
         }
 
         if ($status == 'completed') {
-            $this->transactionRepository->updateTransaction(['completed_at' => now()], $idTransaction);
+            $this->transactionRepository->updateTransaction(['completed_at' => now(), 'status' => $status], $idTransaction);
         }
 
         if ($status == 'canceled') {
-            $this->transactionRepository->updateTransaction(['canceled_at' => now()], $idTransaction);
+            $this->transactionRepository->updateTransaction(['canceled_at' => now(), 'status' => $status], $idTransaction);
         }
     }
 }
