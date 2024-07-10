@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\TransactionService;
 use App\Http\Requests\TransactionStoreUpdate;
 use App\Http\Resources\TransactionResource;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 
 class TransactionController extends Controller
@@ -22,8 +23,7 @@ class TransactionController extends Controller
     public function index()
     {
         $transactions = $this->transactionService->getAllTransactions();
-
-        return new TransactionResource($transactions);
+        return TransactionResource::collection($transactions);
     }
 
     /**
@@ -42,8 +42,9 @@ class TransactionController extends Controller
     public function show(string $id)
     {
         $transaction = $this->transactionService->getTransactionById((int) $id);
-
+        $transaction = Transaction::with(['payer', 'payee'])->findOrFail($id);
         return new TransactionResource($transaction);
+        // return new TransactionResource($transaction);
     }
 
     /**

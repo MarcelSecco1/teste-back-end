@@ -21,7 +21,6 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'cpf' => $this->cpf,
             'type' => $this->type,
-            'created_at' => Carbon::parse($this->created_at)->format('Y-m-d H:i:s'),
         ];
     }
 }

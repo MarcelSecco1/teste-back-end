@@ -4,7 +4,6 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Collection;
 
 class TransactionResource extends JsonResource
 {
@@ -16,8 +15,10 @@ class TransactionResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'payer' => UserResource::collection($this->whenLoaded('payer')),
-            'payee' => UserResource::collection($this->whenLoaded('payee')),
+            // 'payer' => new UserResource($this->whenLoaded('payer')),
+            // 'payee' => new UserResource($this->whenLoaded('payee')),
+            'payer' => new UserResource($this->whenLoaded('payer')),
+            'payee' => new UserResource($this->whenLoaded('payee')),
             'value' => $this->value,
             'status' => $this->status,
             'completed_at' => $this->completed_at,

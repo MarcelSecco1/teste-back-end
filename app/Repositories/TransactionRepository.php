@@ -17,7 +17,7 @@ class TransactionRepository
 
     public function getAllTransactions()
     {
-        return $this->transaction->all();
+        return $this->transaction->with('payer', 'payee')->get();
     }
 
     public function createTransaction(array $data)
@@ -27,7 +27,7 @@ class TransactionRepository
 
     public function getTransactionById(int $idTransaction)
     {
-        return $this->transaction->findOrFail($idTransaction);
+        return $this->transaction->with('payer', 'payee')->findOrFail($idTransaction);
     }
 
     public function updateTransaction(array $data, int $transactionId)
@@ -40,6 +40,4 @@ class TransactionRepository
         $transaction = $this->getTransactionById($idTransaction);
         $transaction->delete();
     }
-
-
 }
