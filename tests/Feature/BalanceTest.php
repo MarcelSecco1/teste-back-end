@@ -4,15 +4,21 @@ namespace Tests\Feature;
 
 use App\Models\Balance;
 use App\Models\User;
+use App\Observers\UserObserver;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class BalanceTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function create_balance(): void
     {
+        User::unsetEventDispatcher();
+
         $user = User::factory()->create();
+
+        User::observe(UserObserver::class);
 
         $response = $this->postJson('/balance', [
             'user_id' => $user->id,
@@ -24,7 +30,9 @@ class BalanceTest extends TestCase
 
     public function test_get_balance(): void
     {
+        User::unsetEventDispatcher();
         $user = User::factory()->create();
+        User::observe(UserObserver::class);
         $balance = Balance::factory()->create([
             'user_id' => $user->id,
         ]);
@@ -36,7 +44,9 @@ class BalanceTest extends TestCase
 
     public function test_update_balance(): void
     {
+        User::unsetEventDispatcher();
         $user = User::factory()->create();
+        User::observe(UserObserver::class);
         $balance = Balance::factory()->create([
             'user_id' => $user->id,
         ]);
@@ -53,7 +63,10 @@ class BalanceTest extends TestCase
 
     public function test_destroy_balance(): void
     {
+
+        User::unsetEventDispatcher();
         $user = User::factory()->create();
+        User::observe(UserObserver::class);
         $balance = Balance::factory()->create([
             'user_id' => $user->id,
         ]);
@@ -73,5 +86,4 @@ class BalanceTest extends TestCase
         $response->assertJsonValidationErrors('user_id');
         $response->assertStatus(422);
     }
-
 }
