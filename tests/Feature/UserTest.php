@@ -32,7 +32,7 @@ class UserTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->get('/api/user' . $user->id);
+        $response = $this->get('/api/user/' . $user->id);
 
         $response
             ->assertStatus(200)
@@ -51,7 +51,7 @@ class UserTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->putJson('/api/user' . $user->id, [
+        $response = $this->putJson('/api/user/' . $user->id, [
             'name' => 'John Doe',
             'email' => 'johndoe@gmail.com'
         ]);
@@ -67,7 +67,7 @@ class UserTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->delete('/api/user' . $user->id);
+        $response = $this->delete('/api/user/' . $user->id);
 
         $response
             ->assertStatus(200)

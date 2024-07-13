@@ -154,7 +154,7 @@ class TransactionTest extends TestCase
 
         $response->assertStatus(201);
 
-        $response = $this->putJson('/api/transaction' . $response->json('id'), [
+        $response = $this->putJson('/api/transaction/' . $response->json('id'), [
             'value' => 100.00,
         ]);
 

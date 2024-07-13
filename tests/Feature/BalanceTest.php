@@ -12,7 +12,7 @@ class BalanceTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function create_balance(): void
+    public function test_create_balance(): void
     {
         User::unsetEventDispatcher();
 
@@ -37,7 +37,7 @@ class BalanceTest extends TestCase
             'user_id' => $user->id,
         ]);
 
-        $response = $this->getJson('/api/balance' . $balance->id);
+        $response = $this->getJson('/api/balance/' . $balance->id);
 
         $response->assertStatus(200);
     }
@@ -51,7 +51,7 @@ class BalanceTest extends TestCase
             'user_id' => $user->id,
         ]);
 
-        $response = $this->putJson('/api/balance' . $balance->id, [
+        $response = $this->putJson('/api/balance/' . $balance->id, [
             'amount' => 200.0,
         ]);
 
@@ -71,7 +71,7 @@ class BalanceTest extends TestCase
             'user_id' => $user->id,
         ]);
 
-        $response = $this->deleteJson('/api/balance' . $balance->id);
+        $response = $this->deleteJson('/api/balance/' . $balance->id);
 
         $response->assertStatus(204);
     }
