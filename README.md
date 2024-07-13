@@ -13,5 +13,5 @@ Busquei trabalhar com boas práticas, ou seja, implementei uma Clean Architectur
 
 ### O que falta fazer?
 
-[ ] Implantar a camada de cache
-[ ] Configurar deploy automático (CD)
+- [ ] Implantar a camada de cache
+- [ ] Configurar deploy automático (CD)
