@@ -9,5 +9,5 @@ class ExampleTest extends TestCase
     /**
      * A basic test example.
      */
-    
+
 }
