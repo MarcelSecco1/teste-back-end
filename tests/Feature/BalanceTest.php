@@ -20,7 +20,7 @@ class BalanceTest extends TestCase
 
         User::observe(UserObserver::class);
 
-        $response = $this->postJson('/balance', [
+        $response = $this->postJson('/api/balance', [
             'user_id' => $user->id,
             'amount' => 100,
         ]);
@@ -37,7 +37,7 @@ class BalanceTest extends TestCase
             'user_id' => $user->id,
         ]);
 
-        $response = $this->getJson('/balance/' . $balance->id);
+        $response = $this->getJson('/api/balance' . $balance->id);
 
         $response->assertStatus(200);
     }
@@ -51,7 +51,7 @@ class BalanceTest extends TestCase
             'user_id' => $user->id,
         ]);
 
-        $response = $this->putJson('/balance/' . $balance->id, [
+        $response = $this->putJson('/api/balance' . $balance->id, [
             'amount' => 200.0,
         ]);
 
@@ -71,14 +71,14 @@ class BalanceTest extends TestCase
             'user_id' => $user->id,
         ]);
 
-        $response = $this->deleteJson('/balance/' . $balance->id);
+        $response = $this->deleteJson('/api/balance' . $balance->id);
 
         $response->assertStatus(204);
     }
 
     public function test_invalid_user_id(): void
     {
-        $response = $this->postJson('/balance', [
+        $response = $this->postJson('/api/balance', [
             'user_id' => 0,
             'amount' => 100,
         ]);

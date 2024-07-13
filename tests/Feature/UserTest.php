@@ -14,7 +14,7 @@ class UserTest extends TestCase
     public function test_user_route_response(): void
     {
 
-        $response = $this->getJson('/user');
+        $response = $this->getJson('/api/user');
 
         $response->assertStatus(200);
     }
@@ -23,7 +23,7 @@ class UserTest extends TestCase
     {
         User::factory()->count(10)->create();
 
-        $reponse = $this->getJson('/user');
+        $reponse = $this->getJson('/api/user');
 
         $reponse->assertJsonCount(10, 'data');
     }
@@ -32,7 +32,7 @@ class UserTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->get('/user/' . $user->id);
+        $response = $this->get('/api/user' . $user->id);
 
         $response
             ->assertStatus(200)
@@ -51,7 +51,7 @@ class UserTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->putJson('/user/' . $user->id, [
+        $response = $this->putJson('/api/user' . $user->id, [
             'name' => 'John Doe',
             'email' => 'johndoe@gmail.com'
         ]);
@@ -67,7 +67,7 @@ class UserTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->delete('/user/' . $user->id);
+        $response = $this->delete('/api/user' . $user->id);
 
         $response
             ->assertStatus(200)
@@ -78,7 +78,7 @@ class UserTest extends TestCase
 
     public function test_user_store_route_validation(): void
     {
-        $response = $this->postJson('/user', [
+        $response = $this->postJson('/api/user', [
             'name' => 'John Doe',
             'email' => '',
             'cpf' => '123.456.789-09',
@@ -94,7 +94,7 @@ class UserTest extends TestCase
 
     public function test_url_get_user(): void
     {
-        $response = $this->getJson('/user/fake_value');
+        $response = $this->getJson('/api/user/fake_value');
 
         $response->assertStatus(500);
     }

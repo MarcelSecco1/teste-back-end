@@ -30,7 +30,7 @@ class TransactionTest extends TestCase
             'amount' => 0.00,
         ]);
 
-        $response = $this->postJson('/transaction', [
+        $response = $this->postJson('/api/transaction', [
             'payer_id' => $payer->id,
             'payee_id' => $payee->id,
             'value' => 50.00,
@@ -45,7 +45,7 @@ class TransactionTest extends TestCase
         $payer = User::factory()->create();
         $payee = User::factory()->create();
 
-        $response = $this->postJson('/transaction', [
+        $response = $this->postJson('/api/transaction', [
             'payer_id' => $payer->id,
             'payee_id' => $payee->id,
             'value' => 0.00,
@@ -61,7 +61,7 @@ class TransactionTest extends TestCase
         $payer = User::factory()->create(['type' => 'shopkeeper']);
         $payee = User::factory()->create();
 
-        $response = $this->postJson('/transaction', [
+        $response = $this->postJson('/api/transaction', [
             'payer_id' => $payer->id,
             'payee_id' => $payee->id,
             'value' => 100.00,
@@ -79,7 +79,7 @@ class TransactionTest extends TestCase
         $payee = User::factory()->create();
 
 
-        $response = $this->postJson('/transaction', [
+        $response = $this->postJson('/api/transaction', [
             'payer_id' => $payer->id,
             'payee_id' => $payee->id,
             'value' => 1000.00,
@@ -111,7 +111,7 @@ class TransactionTest extends TestCase
             'amount' => 0.00,
         ]);
 
-        $response = $this->postJson('/transaction', [
+        $response = $this->postJson('/api/transaction', [
             'payer_id' => $payer->id,
             'payee_id' => $payee->id,
             'value' => 50.00,
@@ -146,7 +146,7 @@ class TransactionTest extends TestCase
             'amount' => 0.00,
         ]);
 
-        $response = $this->postJson('/transaction', [
+        $response = $this->postJson('/api/transaction', [
             'payer_id' => $payer->id,
             'payee_id' => $payee->id,
             'value' => 50.00,
@@ -154,7 +154,7 @@ class TransactionTest extends TestCase
 
         $response->assertStatus(201);
 
-        $response = $this->putJson('/transaction/' . $response->json('id'), [
+        $response = $this->putJson('/api/transaction' . $response->json('id'), [
             'value' => 100.00,
         ]);
 
