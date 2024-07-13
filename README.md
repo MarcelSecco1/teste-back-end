@@ -3,9 +3,9 @@
 Neste teste foram passadas instruções e camadas a serem seguidas. Eu fiz este projeto apenas para aplicar os conceitos que aprendi ao longo da minha trajetória com Laravel e para praticar.
 
 ### Tecnologias
-    - Laravel
-    - Laravel Sail
-    - PHPUnit
+- Laravel
+- Laravel Sail
+- PHPUnit
 
 ### Qual foi meu objetivo nesse projeto?
 
