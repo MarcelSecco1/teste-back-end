@@ -94,23 +94,23 @@ class TransactionService
 
             if ($payer->type == 'shopkeeper') {
                 $this->updateStatusTransaction($transaction->id, 'canceled');
-                DB::commit();
+                DB::rollBack();
                 return ['message' => 'Shopkeepers cannot make transactions'];
             }
             if ($transaction->status == 'completed') {
-                DB::commit();
+                DB::rollBack();
                 return ['message' => 'Transaction already completed'];
             }
 
             if ($payer->balance < $data['value']) {
                 $this->updateStatusTransaction($transaction->id, 'canceled');
-                DB::commit();
+                DB::rollBack();
                 return ['message' => 'Insufficient balance'];
             }
 
             if (isset($data['value']) || $data['value'] <= 0) {
                 $this->updateStatusTransaction($transaction->id, 'canceled');
-                DB::commit();
+                DB::rollBack();
                 return ['message' => 'Invalid value'];
             }
 

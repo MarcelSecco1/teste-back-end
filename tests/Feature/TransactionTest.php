@@ -127,4 +127,41 @@ class TransactionTest extends TestCase
             'amount' => 50.00,
         ]);
     }
+
+    public function test_updated_transaction_completed(){
+        User::unsetEventDispatcher();
+
+        $payer = User::factory()->create();
+        $payee = User::factory()->create();
+
+        User::observe(UserObserver::class);
+
+        $balancePayer = Balance::factory()->create([
+            'user_id' => $payer->id,
+            'amount' => 100.00,
+        ]);
+
+        $balancePayee = Balance::factory()->create([
+            'user_id' => $payee->id,
+            'amount' => 0.00,
+        ]);
+
+        $response = $this->postJson('/transaction', [
+            'payer_id' => $payer->id,
+            'payee_id' => $payee->id,
+            'value' => 50.00,
+        ]);
+
+        $response->assertStatus(201);
+
+        $response = $this->putJson('/transaction/' . $response->json('id'), [
+            'value' => 100.00,
+        ]);
+
+        $response->assertJson([
+            'message' => 'Transaction already completed',
+        ]);
+        $response->assertStatus(400);
+
+    }
 }
